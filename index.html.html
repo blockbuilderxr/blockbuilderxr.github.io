@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>blockbuilderxr — Roblox Systems Scripter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1117;
+    --bg-raised:#161B22;
+    --bg-card:#1A2029;
+    --bg-hover:#21262D;
+    --border:#2A323D;
+    --border-soft:#222932;
+    --text:#E6EDF3;
+    --text-dim:#9BA7B4;
+    --text-faint:#6E7A88;
+    --signal:#56D098;
+    --signal-dim:#3FA877;
+    --display:'Inter',-apple-system,sans-serif;
+    --mono:'JetBrains Mono',monospace;
+    --max-w:920px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--display);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--signal-dim);color:#fff;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:4px;}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;background:rgba(13,17,23,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft);}
+  nav{max-width:var(--max-w);margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:var(--mono);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;}
+  .logo .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);}
+  .navlinks{display:flex;gap:26px;}
+  .navlinks a{font-size:14px;color:var(--text-dim);font-weight:500;transition:color 0.15s;}
+  .navlinks a:hover{color:var(--text);}
+  .nav-cta{font-family:var(--mono);font-size:13px;border:1px solid var(--signal-dim);color:var(--signal);padding:7px 14px;border-radius:5px;transition:all 0.15s;}
+  .nav-cta:hover{background:var(--signal);color:#0D1117;}
+
+  /* hero */
+  .hero{padding:72px 0 56px;}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;color:var(--signal);font-weight:600;letter-spacing:0.05em;display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--signal);}
+  h1{font-size:42px;font-weight:800;line-height:1.12;letter-spacing:-0.02em;margin-bottom:18px;max-width:600px;}
+  h1 .accent{color:var(--signal);}
+  .hero-sub{font-size:16px;color:var(--text-dim);max-width:520px;margin-bottom:28px;line-height:1.65;}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-primary{font-family:var(--mono);font-size:14px;font-weight:500;background:var(--signal);color:#0D1117;padding:12px 20px;border-radius:6px;transition:all 0.15s;display:inline-block;border:none;cursor:pointer;}
+  .btn-primary:hover{background:#6EDBA8;transform:translateY(-1px);}
+  .btn-secondary{font-family:var(--mono);font-size:14px;font-weight:500;border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:6px;transition:all 0.15s;display:inline-block;}
+  .btn-secondary:hover{border-color:var(--text-faint);transform:translateY(-1px);}
+
+  /* sections */
+  section{padding:56px 0;}
+  .section-label{font-family:var(--mono);font-size:12.5px;color:var(--signal);font-weight:600;margin-bottom:8px;}
+  .section-title{font-size:24px;font-weight:700;letter-spacing:-0.01em;margin-bottom:6px;}
+  .section-sub{font-size:14px;color:var(--text-faint);margin-bottom:28px;}
+
+  /* why hire - strip */
+  .why-strip{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--signal);margin-top:8px;}
+  .why-row{display:flex;align-items:flex-start;gap:18px;padding:18px 0 18px 24px;}
+  .why-row:not(:last-child){border-bottom:1px solid var(--border-soft);}
+  .why-num{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--signal);flex-shrink:0;padding-top:2px;}
+  .why-content{font-size:14.5px;color:var(--text-dim);line-height:1.6;}
+  .why-content strong{color:var(--text);font-weight:600;}
+
+  /* projects - dropdowns */
+  .projects{display:flex;flex-direction:column;gap:10px;}
+  .project{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:10px;overflow:hidden;transition:border-color 0.15s;}
+  .project:hover{border-color:var(--border);}
+  .project-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;background:none;border:none;color:inherit;font-family:inherit;text-align:left;}
+  .project-main{display:flex;flex-direction:column;gap:3px;}
+  .project-name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text);}
+  .project-tag{font-family:var(--mono);font-size:12px;color:var(--text-faint);}
+  .chevron{font-size:14px;color:var(--text-faint);transition:transform 0.25s;}
+  .project.open .chevron{transform:rotate(180deg);color:var(--signal);}
+  .project-drawer{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+  .project-drawer.open{max-height:1200px;}
+  .project-drawer-inner{padding:0 20px 20px;}
+  .project-blurb{font-size:14px;color:var(--text-dim);line-height:1.65;margin-bottom:16px;padding-top:4px;border-top:1px solid var(--border-soft);padding-top:16px;}
+  .project-drawer-actions{display:flex;gap:10px;margin-bottom:0;}
+  .btn-mini{font-family:var(--mono);font-size:12.5px;font-weight:500;padding:7px 14px;border-radius:5px;border:none;cursor:pointer;background:var(--signal);color:#0D1117;transition:all 0.15s;}
+  .btn-mini:hover{background:#6EDBA8;}
+  .btn-mini-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);}
+  .btn-mini-ghost:hover{border-color:var(--text-faint);color:var(--text);background:transparent;}
+
+  /* code viewer */
+  .code-viewer{max-height:0;overflow:hidden;transition:max-height 0.3s ease;margin-top:0;}
+  .code-viewer.open{max-height:560px;margin-top:16px;}
+  .code-viewer-inner{border:1px solid var(--border);border-radius:8px;background:#0A0E13;overflow:hidden;}
+  .code-viewer-toolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border-soft);background:var(--bg-raised);}
+  .code-viewer-filename{font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+  .code-viewer-lines{font-family:var(--mono);font-size:11.5px;color:var(--text-faint);}
+  .code-viewer pre{padding:16px 18px;font-family:var(--mono);font-size:12px;line-height:1.7;overflow:auto;max-height:480px;color:#C9D1D9;tab-size:4;}
+
+  /* skills */
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .skill-card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:10px;padding:20px;}
+  .skill-card h3{font-family:var(--mono);font-size:12.5px;color:var(--signal);font-weight:600;margin-bottom:12px;}
+  .skill-card ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+  .skill-card li{font-size:13.5px;color:var(--text-dim);position:relative;padding-left:14px;}
+  .skill-card li::before{content:"+";position:absolute;left:0;color:var(--signal);font-weight:600;}
+
+  /* contact */
+  .contact h2{font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:8px;}
+  .contact-sub{color:var(--text-dim);font-size:14.5px;margin-bottom:24px;}
+  .contact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .contact-card{display:flex;align-items:center;gap:14px;padding:18px;background:var(--bg-card);border:1px solid var(--border-soft);border-radius:10px;transition:all 0.15s;}
+  .contact-card:hover{border-color:var(--signal-dim);transform:translateY(-2px);}
+  .contact-card-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .contact-card-label{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);font-weight:600;letter-spacing:0.04em;margin-bottom:2px;}
+  .contact-card-value{font-size:13.5px;font-weight:600;color:var(--text);}
+
+  footer{border-top:1px solid var(--border-soft);padding:22px 0 36px;}
+  .footer-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--text-faint);flex-wrap:wrap;gap:8px;}
+
+  @media(max-width:760px){
+    .navlinks{display:none;}
+    h1{font-size:32px;}
+    .why-grid,.skills-grid,.contact-cards{grid-template-columns:1fr;}
+  }
+
+  /* fsm interactive */
+  .fsm-layout{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;margin-top:8px;}
+  .fsm-intro p{color:var(--text-dim);font-size:14.5px;line-height:1.65;margin-bottom:14px;}
+  .fsm-intro code{font-family:var(--mono);background:var(--bg-hover);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--signal);}
+  .fsm-diagram{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:10px;padding:24px;}
+  .fsm-states{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .state-btn{font-family:var(--mono);font-size:12.5px;font-weight:500;padding:8px 13px;border-radius:6px;border:1px solid var(--border);background:var(--bg-raised);color:var(--text-dim);cursor:pointer;transition:all 0.15s;}
+  .state-btn:hover{border-color:var(--signal-dim);color:var(--text);}
+  .state-btn.active{background:var(--signal);border-color:var(--signal);color:#0D1117;}
+  .fsm-detail{border-top:1px solid var(--border-soft);padding-top:16px;}
+  .fsm-detail .state-name{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--signal);margin-bottom:8px;}
+  .fsm-detail .state-desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:14px;}
+  .fsm-trans-label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-faint);margin-bottom:8px;}
+  .fsm-trans-list{display:flex;flex-direction:column;gap:6px;}
+  .fsm-trans-list div{font-family:var(--mono);font-size:12px;color:var(--text);background:var(--bg-raised);border:1px solid var(--border-soft);padding:7px 10px;border-radius:5px;}
+  .fsm-trans-list span{color:var(--signal);}
+  @media(max-width:760px){.fsm-layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo"><span class="dot"></span>BLOCKBUILDERXR</div>
+    <div class="navlinks">
+      <a href="#systems-thinking">Combat FSM</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+    </div>
+    <a class="nav-cta" href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">ROBLOX SYSTEMS SCRIPTER FOR HIRE</div>
+      <h1>I build the <span class="accent">systems</span> under the gameplay.</h1>
+      <p class="hero-sub">Combat, inventory, quests, economy, leveling — server-authoritative, clean, and built to scale. Click any system below to read the real code.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#projects">See the work</a>
+        <a class="btn-secondary" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="systems-thinking">
+    <div class="wrap">
+      <div class="section-label">// SYSTEMS THINKING</div>
+      <div class="section-title">A real combat state machine</div>
+      <div class="section-sub">Click a state to see how it actually transitions.</div>
+      <div class="fsm-layout">
+        <div class="fsm-intro">
+          <p>Most exploits and desync bugs in Roblox games come from the same root cause: client and server disagreeing about <code>state</code>. I design combat and ability systems as explicit finite-state machines, validated server-side, so a client can request a transition but never assert one.</p>
+          <p>The diagram is a simplified version of a real pattern I use for melee combat — five states, guarded transitions, no silent fallthroughs.</p>
+        </div>
+        <div class="fsm-diagram">
+          <div class="fsm-states" id="stateButtons"></div>
+          <div class="fsm-detail">
+            <div class="state-name" id="stateName">Idle</div>
+            <div class="state-desc" id="stateDesc"></div>
+            <div class="fsm-trans-label">Valid transitions →</div>
+            <div class="fsm-trans-list" id="stateTrans"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-label">// SYSTEMS</div>
+      <div class="section-title">Real, commented Luau</div>
+      <div class="section-sub">Tap a system to expand it. Read the code inline or open it on GitHub.</div>
+      <div class="projects">
+        <div class="project" id="proj-combat">
+          <button class="project-header" onclick="toggleProject('combat')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">CombatSystem.luau</div>
+              <div class="project-tag">Combat · FSM</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-combat">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-combat">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Server-authoritative melee combat on a five-state machine. Clients request, the server decides — no client-sided hit exploits.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('combat')" id="codebtn-combat">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/CombatSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-combat">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">CombatSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-combat"></span>
+                  </div>
+                  <pre id="pre-combat"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-inventory">
+          <button class="project-header" onclick="toggleProject('inventory')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">InventorySystem.luau</div>
+              <div class="project-tag">Inventory · DataStore</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-inventory">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-inventory">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Session-locked inventory on ProfileService. Data-driven items, safe against duplicate saves and data loss.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('inventory')" id="codebtn-inventory">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/InventorySystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-inventory">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">InventorySystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-inventory"></span>
+                  </div>
+                  <pre id="pre-inventory"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-matchmaking">
+          <button class="project-header" onclick="toggleProject('matchmaking')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">MatchmakingSystem.luau</div>
+              <div class="project-tag">Matchmaking · Cross-server</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-matchmaking">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-matchmaking">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Skill-based matchmaking across servers with MemoryStore queues and atomic locks. Widening tolerance so queues never stall.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('matchmaking')" id="codebtn-matchmaking">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/MatchmakingSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-matchmaking">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">MatchmakingSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-matchmaking"></span>
+                  </div>
+                  <pre id="pre-matchmaking"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-quest">
+          <button class="project-header" onclick="toggleProject('quest')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">QuestSystem.luau</div>
+              <div class="project-tag">Quests · Objectives</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-quest">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-quest">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Data-defined quests with signal-driven objectives, quest chains, and validated rewards.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('quest')" id="codebtn-quest">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/QuestSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-quest">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">QuestSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-quest"></span>
+                  </div>
+                  <pre id="pre-quest"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-economy">
+          <button class="project-header" onclick="toggleProject('economy')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">EconomySystem.luau</div>
+              <div class="project-tag">Economy · Shop</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-economy">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-economy">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Server-side currency and shops with atomic, double-spend-proof purchases.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('economy')" id="codebtn-economy">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/EconomySystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-economy">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">EconomySystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-economy"></span>
+                  </div>
+                  <pre id="pre-economy"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-leveling">
+          <button class="project-header" onclick="toggleProject('leveling')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">LevelingSystem.luau</div>
+              <div class="project-tag">XP · Progression</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-leveling">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-leveling">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Leveling with a tunable XP curve, multi-level jumps, and clean level-up signals.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('leveling')" id="codebtn-leveling">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/LevelingSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-leveling">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">LevelingSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-leveling"></span>
+                  </div>
+                  <pre id="pre-leveling"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-pet">
+          <button class="project-header" onclick="toggleProject('pet')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">PetSystem.luau</div>
+              <div class="project-tag">Pets · Companions</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-pet">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-pet">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Server-owned pets that follow smoothly and grant passive stat bonuses through one hook.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('pet')" id="codebtn-pet">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/PetSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-pet">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">PetSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-pet"></span>
+                  </div>
+                  <pre id="pre-pet"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project" id="proj-crafting">
+          <button class="project-header" onclick="toggleProject('crafting')" aria-expanded="false">
+            <div class="project-main">
+              <div class="project-name">CraftingSystem.luau</div>
+              <div class="project-tag">Crafting · Recipes</div>
+            </div>
+            <div class="project-right">
+              <span class="chevron" id="chev-crafting">▾</span>
+            </div>
+          </button>
+          <div class="project-drawer" id="drawer-crafting">
+            <div class="project-drawer-inner">
+              <p class="project-blurb">Recipe-based crafting with atomic material consumption — failed crafts never eat your items.</p>
+              <div class="project-drawer-actions">
+                <button class="btn-mini" onclick="toggleCode('crafting')" id="codebtn-crafting">View code</button>
+                <a class="btn-mini btn-mini-ghost" href="https://github.com/blockbuilderxr/roblox-systems/blob/main/CraftingSystem.luau" target="_blank">GitHub ↗</a>
+              </div>
+              <div class="code-viewer" id="viewer-crafting">
+                <div class="code-viewer-inner">
+                  <div class="code-viewer-toolbar">
+                    <span class="code-viewer-filename">CraftingSystem.luau</span>
+                    <span class="code-viewer-lines" id="lines-crafting"></span>
+                  </div>
+                  <pre id="pre-crafting"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="section-label">// TOOLBOX</div>
+      <div class="section-title">What I work with</div>
+      <div class="section-sub"></div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h3>COMBAT &amp; ABILITIES</h3>
+          <ul>
+            <li>Hit detection &amp; hitboxes</li>
+            <li>Combo systems</li>
+            <li>Dashing &amp; movement</li>
+            <li>Blocking &amp; parrying</li>
+            <li>Ragdoll &amp; knockback</li>
+            <li>Ability / cooldown systems</li>
+            <li>Status effects (stun, burn)</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3>PROGRESSION &amp; ITEMS</h3>
+          <ul>
+            <li>Inventory frameworks</li>
+            <li>Quests &amp; objectives</li>
+            <li>Economy &amp; shops</li>
+            <li>Leveling &amp; XP</li>
+            <li>Crafting &amp; recipes</li>
+            <li>Pets &amp; companions</li>
+            <li>Daily rewards &amp; streaks</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3>WORLD SYSTEMS</h3>
+          <ul>
+            <li>Day / night cycles</li>
+            <li>Weather systems</li>
+            <li>Building &amp; placement</li>
+            <li>Spawning &amp; NPC AI</li>
+            <li>Round / game loops</li>
+            <li>Checkpoints &amp; zones</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3>MULTIPLAYER</h3>
+          <ul>
+            <li>Parties &amp; teams</li>
+            <li>Trading systems</li>
+            <li>Leaderboards</li>
+            <li>Custom chat &amp; commands</li>
+            <li>Matchmaking</li>
+            <li>Cross-server data</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3>NETWORKING &amp; DATA</h3>
+          <ul>
+            <li>RemoteEvent design</li>
+            <li>Server-side validation</li>
+            <li>ProfileService / DataStore</li>
+            <li>MemoryStore, Teleport API</li>
+            <li>Anti-exploit patterns</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3>PRACTICE</h3>
+          <ul>
+            <li>Luau, strict typing</li>
+            <li>Module architecture</li>
+            <li>Signal patterns</li>
+            <li>Rojo / Git workflows</li>
+            <li>Performance profiling</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2>Let's build something that holds up.</h2>
+      <p class="contact-sub">Open to freelance and full-time gameplay scripting work. Pick a way to reach me.</p>
+      <div class="contact-cards">
+        <a class="contact-card" href="https://discord.com/users/nvmloki" target="_blank">
+          <div class="contact-card-icon" style="background:rgba(88,101,242,0.15);color:#7C88F5;">⊕</div>
+          <div>
+            <div class="contact-card-label">DISCORD</div>
+            <div class="contact-card-value">nvmloki</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://create.roblox.com/talent/creators/11038179268" target="_blank">
+          <div class="contact-card-icon" style="background:rgba(86,208,152,0.15);color:var(--signal);">◈</div>
+          <div>
+            <div class="contact-card-label">ROBLOX TALENT HUB</div>
+            <div class="contact-card-value">View profile</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://github.com/blockbuilderxr" target="_blank">
+          <div class="contact-card-icon" style="background:rgba(155,167,180,0.15);color:var(--text-dim);">⌥</div>
+          <div>
+            <div class="contact-card-label">GITHUB</div>
+            <div class="contact-card-value">blockbuilderxr</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <span>BLOCKBUILDERXR — GAMEPLAY SYSTEMS</span>
+      <span>BUILT WITH LUAU</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const CODE = {
+  combat: "--[[\n    CombatSystem.luau\n    Server-side combat manager.\n\n    Architecture:\n      - All state transitions are validated server-side.\n      - Clients send requests; the server decides if they're legal.\n      - Hitboxes are owned and resolved by the server only.\n      - Signals notify other systems (UI, animations, audio) without tight coupling.\n\n    States: Idle \u2192 Windup \u2192 Active \u2192 Recovery \u2192 (Stunned at any point from incoming hit)\n--]]\n\nlocal Players        = game:GetService(\"Players\")\nlocal RunService     = game:GetService(\"RunService\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)  -- any signal library works\n\n-- \u2500\u2500\u2500 Constants \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal HITBOX_SIZE     = Vector3.new(5, 5, 4)   -- studs in front of the character\nlocal WINDUP_DURATION = 0.3                     -- seconds before the hit window opens\nlocal ACTIVE_DURATION = 0.15                    -- seconds the hitbox is live\nlocal RECOVERY_DURATION = 0.45                  -- seconds before another attack is legal\nlocal STUN_DURATION   = 0.6                     -- seconds a hit target is locked out\nlocal BASE_DAMAGE     = 18\n\n-- \u2500\u2500\u2500 State enum \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal State = {\n    Idle     = \"Idle\",\n    Windup   = \"Windup\",\n    Active   = \"Active\",\n    Recovery = \"Recovery\",\n    Stunned  = \"Stunned\",\n}\n\n-- Legal transitions: State \u2192 list of states it may move to\nlocal VALID_TRANSITIONS = {\n    [State.Idle]     = { State.Windup },\n    [State.Windup]   = { State.Active, State.Idle },   -- Idle = cancelled\n    [State.Active]   = { State.Recovery },\n    [State.Recovery] = { State.Idle, State.Stunned },\n    [State.Stunned]  = { State.Idle },\n}\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal CombatSystem = {}\nCombatSystem.__index = CombatSystem\n\n-- Signals other systems can subscribe to\nCombatSystem.StateChanged = Signal.new()   -- (player, newState)\nCombatSystem.HitLanded    = Signal.new()   -- (attacker, victim, damage)\n\n-- Per-player state table  { [userId] = State }\nlocal playerStates: { [number]: string } = {}\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getState(player: Player): string\n    return playerStates[player.UserId] or State.Idle\nend\n\nlocal function isValidTransition(from: string, to: string): boolean\n    local allowed = VALID_TRANSITIONS[from]\n    if not allowed then return false end\n    for _, v in ipairs(allowed) do\n        if v == to then return true end\n    end\n    return false\nend\n\n-- Apply a state transition. Returns (success, reason).\nlocal function transition(player: Player, toState: string): (boolean, string?)\n    local current = getState(player)\n    if not isValidTransition(current, toState) then\n        return false, (\"illegal transition: %s \u2192 %s\"):format(current, toState)\n    end\n    playerStates[player.UserId] = toState\n    CombatSystem.StateChanged:Fire(player, toState)\n    return true\nend\n\n-- Resolve a server-side hitbox and deal damage to valid targets.\nlocal function resolveHitbox(attacker: Player): { Player }\n    local character = attacker.Character\n    if not character then return {} end\n\n    local root = character:FindFirstChild(\"HumanoidRootPart\") :: BasePart\n    if not root then return {} end\n\n    local hitboxCFrame = root.CFrame * CFrame.new(0, 0, -(HITBOX_SIZE.Z / 2 + 1))\n    local hitParts = workspace:GetPartBoundsInBox(hitboxCFrame, HITBOX_SIZE)\n\n    local hit: { Player } = {}\n    local alreadyHit: { [Player]: boolean } = {}\n\n    for _, part in ipairs(hitParts) do\n        local model = part:FindFirstAncestorOfClass(\"Model\")\n        if not model then continue end\n\n        local humanoid = model:FindFirstChildOfClass(\"Humanoid\") :: Humanoid\n        if not humanoid or humanoid.Health <= 0 then continue end\n\n        local victim = Players:GetPlayerFromCharacter(model)\n        if not victim or victim == attacker or alreadyHit[victim] then continue end\n\n        alreadyHit[victim] = true\n        humanoid:TakeDamage(BASE_DAMAGE)\n        table.insert(hit, victim)\n        CombatSystem.HitLanded:Fire(attacker, victim, BASE_DAMAGE)\n\n        -- Stun the victim\n        task.spawn(function()\n            transition(victim, State.Stunned)\n            task.wait(STUN_DURATION)\n            -- Only clear stun if still stunned (another hit may have extended it)\n            if getState(victim) == State.Stunned then\n                transition(victim, State.Idle)\n            end\n        end)\n    end\n\n    return hit\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Called when a client requests to attack. Returns (success, reason).\nfunction CombatSystem.requestAttack(player: Player): (boolean, string?)\n    local ok, reason = transition(player, State.Windup)\n    if not ok then return false, reason end\n\n    task.spawn(function()\n        -- Windup \u2014 wait before the hit window opens\n        task.wait(WINDUP_DURATION)\n        if getState(player) ~= State.Windup then return end  -- cancelled\n\n        -- Active \u2014 hit window is live; resolve hitbox immediately on server\n        transition(player, State.Active)\n        resolveHitbox(player)\n\n        task.wait(ACTIVE_DURATION)\n        if getState(player) ~= State.Active then return end\n\n        -- Recovery \u2014 locked out from attacking again\n        transition(player, State.Recovery)\n\n        task.wait(RECOVERY_DURATION)\n        if getState(player) ~= State.Recovery then return end\n\n        transition(player, State.Idle)\n    end)\n\n    return true\nend\n\n-- Force a player back to Idle (e.g. on respawn or round reset).\nfunction CombatSystem.reset(player: Player)\n    playerStates[player.UserId] = State.Idle\n    CombatSystem.StateChanged:Fire(player, State.Idle)\nend\n\nfunction CombatSystem.getState(player: Player): string\n    return getState(player)\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerRemoving:Connect(function(player)\n    playerStates[player.UserId] = nil\nend)\n\n\n-- \u2500\u2500\u2500 RemoteEvent wiring \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n-- Wire up via a RemoteEvent in ReplicatedStorage.\n\nlocal AttackRemote = ReplicatedStorage:WaitForChild(\"AttackRequest\") :: RemoteEvent\n\nAttackRemote.OnServerEvent:Connect(function(player: Player)\n    local ok, reason = CombatSystem.requestAttack(player)\n    if not ok then\n        -- Optionally notify the client the request was rejected\n        warn((\"[Combat] Rejected attack from %s: %s\"):format(player.Name, reason or \"unknown\"))\n    end\nend)\n\n\nreturn CombatSystem\n",
+  inventory: "--[[\n    InventorySystem.luau\n    Server-side inventory and item management.\n\n    Architecture:\n      - Session-locked profiles prevent duplicate saves during server overlap.\n      - Items are defined as attribute tables (no hardcoded if/elseif chains).\n      - The client never writes inventory data \u2014 it only receives replicated state.\n      - Equip/unequip is validated server-side before any visual change fires.\n\n    Integrates with ProfileService (or swap for DataStore2 \u2014 same interface below).\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\nlocal RunService        = game:GetService(\"RunService\")\n\nlocal Signal       = require(ReplicatedStorage.Packages.Signal)\nlocal ProfileService = require(ReplicatedStorage.Packages.ProfileService)\n\n-- \u2500\u2500\u2500 Item Registry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n--[[\n    Define all items here. No logic lives in the item table \u2014 items are\n    data only. Systems (combat, stats) read item attributes and act on them.\n--]]\n\ntype ItemDef = {\n    id:          string,\n    displayName: string,\n    category:    \"Weapon\" | \"Consumable\" | \"Armor\",\n    stackable:   boolean,\n    maxStack:    number,\n    attributes:  { [string]: any },\n}\n\nlocal ITEM_REGISTRY: { [string]: ItemDef } = {\n    iron_sword = {\n        id = \"iron_sword\",\n        displayName = \"Iron Sword\",\n        category = \"Weapon\",\n        stackable = false,\n        maxStack = 1,\n        attributes = {\n            damage       = 20,\n            attackSpeed  = 1.0,\n            range        = 5,\n        },\n    },\n    health_potion = {\n        id = \"health_potion\",\n        displayName = \"Health Potion\",\n        category = \"Consumable\",\n        stackable = true,\n        maxStack = 10,\n        attributes = {\n            healAmount = 50,\n            cooldown   = 10,\n        },\n    },\n    leather_chestplate = {\n        id = \"leather_chestplate\",\n        displayName = \"Leather Chestplate\",\n        category = \"Armor\",\n        stackable = false,\n        maxStack = 1,\n        attributes = {\n            defense    = 8,\n            slot       = \"Chest\",\n        },\n    },\n}\n\n-- \u2500\u2500\u2500 Profile Template \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype InventorySlot = {\n    itemId:   string,\n    quantity: number,\n}\n\ntype ProfileData = {\n    inventory: { InventorySlot },   -- ordered list of slots\n    equipped:  { [string]: string },-- slot name \u2192 item id  e.g. { Chest = \"leather_chestplate\" }\n    gold:      number,\n}\n\nlocal PROFILE_TEMPLATE: ProfileData = {\n    inventory = {},\n    equipped  = {},\n    gold      = 0,\n}\n\nlocal ProfileStore = ProfileService.GetProfileStore(\"PlayerInventory_v1\", PROFILE_TEMPLATE)\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal InventorySystem = {}\nInventorySystem.__index = InventorySystem\n\nInventorySystem.InventoryChanged = Signal.new()  -- (player, inventory)\nInventorySystem.ItemEquipped     = Signal.new()  -- (player, slot, itemId)\nInventorySystem.ItemUnequipped   = Signal.new()  -- (player, slot)\n\nlocal profiles: { [number]: any } = {}   -- userId \u2192 Profile\n\n\n-- \u2500\u2500\u2500 Internal helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getProfile(player: Player)\n    return profiles[player.UserId]\nend\n\n-- Find first slot containing itemId. Returns (slotIndex, slot) or nil.\nlocal function findSlot(inventory: { InventorySlot }, itemId: string): (number?, InventorySlot?)\n    for i, slot in ipairs(inventory) do\n        if slot.itemId == itemId then\n            return i, slot\n        end\n    end\n    return nil, nil\nend\n\n-- Replicate the current inventory to the owning client.\nlocal function replicateInventory(player: Player)\n    local profile = getProfile(player)\n    if not profile then return end\n    InventorySystem.InventoryChanged:Fire(player, profile.Data.inventory)\n    -- (wire this to a RemoteEvent to send to the client \u2014 see bottom of file)\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Add items to a player's inventory. Returns (success, reason).\nfunction InventorySystem.addItem(player: Player, itemId: string, quantity: number): (boolean, string?)\n    quantity = quantity or 1\n    local def = ITEM_REGISTRY[itemId]\n    if not def then\n        return false, (\"unknown item: %s\"):format(itemId)\n    end\n\n    local profile = getProfile(player)\n    if not profile then return false, \"profile not loaded\" end\n\n    local inventory = profile.Data.inventory\n\n    if def.stackable then\n        local _, existing = findSlot(inventory, itemId)\n        if existing then\n            local space = def.maxStack - existing.quantity\n            local toAdd = math.min(quantity, space)\n            existing.quantity += toAdd\n            quantity -= toAdd\n        end\n        -- Any overflow goes into new stacks\n        while quantity > 0 do\n            local toAdd = math.min(quantity, def.maxStack)\n            table.insert(inventory, { itemId = itemId, quantity = toAdd })\n            quantity -= toAdd\n        end\n    else\n        for _ = 1, quantity do\n            table.insert(inventory, { itemId = itemId, quantity = 1 })\n        end\n    end\n\n    replicateInventory(player)\n    return true\nend\n\n-- Remove items. Returns (success, reason).\nfunction InventorySystem.removeItem(player: Player, itemId: string, quantity: number): (boolean, string?)\n    quantity = quantity or 1\n    local profile = getProfile(player)\n    if not profile then return false, \"profile not loaded\" end\n\n    local inventory = profile.Data.inventory\n\n    -- Count total available\n    local total = 0\n    for _, slot in ipairs(inventory) do\n        if slot.itemId == itemId then total += slot.quantity end\n    end\n\n    if total < quantity then\n        return false, (\"not enough %s (have %d, need %d)\"):format(itemId, total, quantity)\n    end\n\n    local remaining = quantity\n    local toRemove = {}\n\n    for i, slot in ipairs(inventory) do\n        if slot.itemId == itemId and remaining > 0 then\n            local take = math.min(slot.quantity, remaining)\n            slot.quantity -= take\n            remaining -= take\n            if slot.quantity <= 0 then\n                table.insert(toRemove, 1, i)  -- prepend so we remove back-to-front\n            end\n        end\n    end\n\n    for _, idx in ipairs(toRemove) do\n        table.remove(inventory, idx)\n    end\n\n    replicateInventory(player)\n    return true\nend\n\n-- Equip an item into its category slot. Returns (success, reason).\nfunction InventorySystem.equipItem(player: Player, itemId: string): (boolean, string?)\n    local def = ITEM_REGISTRY[itemId]\n    if not def then return false, \"unknown item\" end\n\n    local profile = getProfile(player)\n    if not profile then return false, \"profile not loaded\" end\n\n    local slotIndex = findSlot(profile.Data.inventory, itemId)\n    if not slotIndex then return false, \"item not in inventory\" end\n\n    if def.stackable then\n        return false, \"consumables cannot be equipped\"\n    end\n\n    local slot = def.attributes.slot or def.category  -- e.g. \"Chest\", or \"Weapon\"\n    profile.Data.equipped[slot] = itemId\n    InventorySystem.ItemEquipped:Fire(player, slot, itemId)\n    return true\nend\n\n-- Unequip a slot. Returns (success, reason).\nfunction InventorySystem.unequipSlot(player: Player, slot: string): (boolean, string?)\n    local profile = getProfile(player)\n    if not profile then return false, \"profile not loaded\" end\n\n    if not profile.Data.equipped[slot] then\n        return false, (\"slot %s is already empty\"):format(slot)\n    end\n\n    local itemId = profile.Data.equipped[slot]\n    profile.Data.equipped[slot] = nil\n    InventorySystem.ItemUnequipped:Fire(player, slot)\n    return true\nend\n\nfunction InventorySystem.getInventory(player: Player): { InventorySlot }?\n    local profile = getProfile(player)\n    if not profile then return nil end\n    return profile.Data.inventory\nend\n\nfunction InventorySystem.getEquipped(player: Player): { [string]: string }?\n    local profile = getProfile(player)\n    if not profile then return nil end\n    return profile.Data.equipped\nend\n\nfunction InventorySystem.getItemDef(itemId: string): ItemDef?\n    return ITEM_REGISTRY[itemId]\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function onPlayerAdded(player: Player)\n    local profile = ProfileStore:LoadProfileAsync(\"Player_\" .. player.UserId)\n\n    if not profile then\n        -- ProfileService couldn't load \u2014 kick the player to avoid data loss\n        player:Kick(\"Failed to load your data. Please rejoin.\")\n        return\n    end\n\n    -- Session-lock: if this profile is already loaded elsewhere, kick\n    profile:AddUserId(player.UserId)\n    profile:Reconcile()  -- fill in missing keys from template\n\n    profile:ListenToRelease(function()\n        profiles[player.UserId] = nil\n        player:Kick(\"Your session was released. Please rejoin.\")\n    end)\n\n    if player.Parent == Players then\n        profiles[player.UserId] = profile\n        replicateInventory(player)\n    else\n        -- Player left before profile loaded\n        profile:Release()\n    end\nend\n\nlocal function onPlayerRemoving(player: Player)\n    local profile = profiles[player.UserId]\n    if profile then\n        profile:Release()\n        profiles[player.UserId] = nil\n    end\nend\n\nPlayers.PlayerAdded:Connect(onPlayerAdded)\nPlayers.PlayerRemoving:Connect(onPlayerRemoving)\n\n-- Handle players who joined before this script ran (e.g. during Studio testing)\nfor _, player in ipairs(Players:GetPlayers()) do\n    task.spawn(onPlayerAdded, player)\nend\n\n\n-- \u2500\u2500\u2500 RemoteEvent wiring \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal Remotes = ReplicatedStorage:WaitForChild(\"InventoryRemotes\")\n\nlocal RequestEquip   = Remotes:WaitForChild(\"RequestEquip\")   :: RemoteEvent\nlocal RequestUnequip = Remotes:WaitForChild(\"RequestUnequip\") :: RemoteEvent\nlocal SyncInventory  = Remotes:WaitForChild(\"SyncInventory\")  :: RemoteEvent\n\nRequestEquip.OnServerEvent:Connect(function(player, itemId)\n    if typeof(itemId) ~= \"string\" then return end\n    InventorySystem.equipItem(player, itemId)\nend)\n\nRequestUnequip.OnServerEvent:Connect(function(player, slot)\n    if typeof(slot) ~= \"string\" then return end\n    InventorySystem.unequipSlot(player, slot)\nend)\n\nInventorySystem.InventoryChanged:Connect(function(player, inventory)\n    SyncInventory:FireClient(player, inventory)\nend)\n\n\nreturn InventorySystem\n",
+  matchmaking: "--[[\n    MatchmakingSystem.luau\n    Cross-server skill-based matchmaking using MemoryStore + TeleportService.\n\n    Architecture:\n      - Players enter a queue stored in MemoryStore (shared across all servers).\n      - A ranked matchmaker runs every tick, pairing players by skill proximity.\n      - Matched groups are teleported to a reserved private server.\n      - Graceful fallback: if queue stays thin, skill tolerance widens over time.\n      - All queue mutations use MemoryStore's SortedMap with update-with-retry\n        to avoid race conditions between servers.\n\n    This runs as a Script in ServerScriptService on every server.\n    Only one server \"wins\" the matchmaking tick via a lightweight lock.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal TeleportService   = game:GetService(\"TeleportService\")\nlocal MemoryStoreService = game:GetService(\"MemoryStoreService\")\nlocal RunService        = game:GetService(\"RunService\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal MATCH_PLACE_ID    = 0          -- \u2190 replace with your Arena place ID\nlocal TEAM_SIZE         = 4          -- players per team (total match = TEAM_SIZE * 2)\nlocal MATCH_SIZE        = TEAM_SIZE * 2\n\nlocal TICK_INTERVAL     = 5          -- seconds between matchmaking passes\nlocal QUEUE_EXPIRY      = 120        -- seconds before a queue entry auto-expires\nlocal LOCK_EXPIRY       = TICK_INTERVAL + 2  -- matchmaking lock TTL\n\n-- Skill tolerance: starts tight, widens the longer someone waits.\nlocal BASE_SKILL_RANGE  = 100        -- initial acceptable rating difference\nlocal TOLERANCE_PER_SEC = 10         -- extra range per second spent waiting\nlocal MAX_SKILL_RANGE   = 500        -- cap\n\nlocal QUEUE_MAP_NAME    = \"MatchmakingQueue_v1\"\nlocal LOCK_MAP_NAME     = \"MatchmakingLock_v1\"\nlocal LOCK_KEY          = \"global_lock\"\n\n-- \u2500\u2500\u2500 Types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype QueueEntry = {\n    userId:      number,\n    username:    string,\n    skillRating: number,\n    joinedAt:    number,   -- os.time()\n    serverId:    string,\n}\n\n-- \u2500\u2500\u2500 MemoryStore handles \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal QueueMap = MemoryStoreService:GetSortedMap(QUEUE_MAP_NAME)\nlocal LockMap  = MemoryStoreService:GetSortedMap(LOCK_MAP_NAME)\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal MatchmakingSystem = {}\nMatchmakingSystem.MatchFound  = Signal.new()  -- (players: { QueueEntry })\nMatchmakingSystem.QueueUpdate = Signal.new()  -- (userId, inQueue: boolean)\n\nlocal localQueuedPlayers: { [number]: boolean } = {}\n\n\n-- \u2500\u2500\u2500 Skill helper \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n--[[\n    In a real game this comes from the player's leaderstat / DataStore.\n    Swapped to a stub here \u2014 plug in your own rating lookup.\n--]]\nlocal function getSkillRating(player: Player): number\n    local ls = player:FindFirstChild(\"leaderstats\")\n    if ls then\n        local rating = ls:FindFirstChild(\"Rating\")\n        if rating then return rating.Value end\n    end\n    return 1000  -- default starting rating\nend\n\n\n-- \u2500\u2500\u2500 Queue management \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Add a player to the global queue. Returns (success, reason).\nfunction MatchmakingSystem.enqueue(player: Player): (boolean, string?)\n    if localQueuedPlayers[player.UserId] then\n        return false, \"already in queue\"\n    end\n\n    local entry: QueueEntry = {\n        userId      = player.UserId,\n        username    = player.Name,\n        skillRating = getSkillRating(player),\n        joinedAt    = os.time(),\n        serverId    = game.JobId,\n    }\n\n    -- SortedMap key = userId (string), score = skillRating for range queries\n    local success, err = pcall(function()\n        QueueMap:SetAsync(tostring(player.UserId), entry, QUEUE_EXPIRY, entry.skillRating)\n    end)\n\n    if not success then\n        warn(\"[Matchmaking] Failed to enqueue\", player.Name, err)\n        return false, \"queue write failed\"\n    end\n\n    localQueuedPlayers[player.UserId] = true\n    MatchmakingSystem.QueueUpdate:Fire(player.UserId, true)\n    return true\nend\n\n-- Remove a player from the global queue.\nfunction MatchmakingSystem.dequeue(player: Player): boolean\n    if not localQueuedPlayers[player.UserId] then return false end\n\n    pcall(function()\n        QueueMap:RemoveAsync(tostring(player.UserId))\n    end)\n\n    localQueuedPlayers[player.UserId] = nil\n    MatchmakingSystem.QueueUpdate:Fire(player.UserId, false)\n    return true\nend\n\n\n-- \u2500\u2500\u2500 Matchmaking pass \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Try to acquire the global matchmaking lock so only one server runs the pass.\nlocal function acquireLock(): boolean\n    local acquired = false\n    pcall(function()\n        -- UpdateAsync is atomic: only sets the key if the callback returns non-nil\n        LockMap:UpdateAsync(LOCK_KEY, function(existing)\n            if existing ~= nil then return nil end  -- someone else holds it\n            acquired = true\n            return game.JobId\n        end, LOCK_EXPIRY)\n    end)\n    return acquired\nend\n\nlocal function releaseLock()\n    pcall(function()\n        LockMap:UpdateAsync(LOCK_KEY, function(holder)\n            if holder == game.JobId then return nil end  -- nil = delete\n            return holder  -- someone else's lock \u2014 leave it\n        end, LOCK_EXPIRY)\n    end)\nend\n\n-- Fetch all queue entries and attempt to form matches.\nlocal function runMatchmakingPass()\n    if not acquireLock() then return end\n\n    local ok, entries = pcall(function()\n        -- Fetch up to 200 queue entries sorted by skill rating\n        return QueueMap:GetRangeAsync(Enum.SortDirection.Ascending, 200)\n    end)\n\n    if not ok or not entries then\n        releaseLock()\n        return\n    end\n\n    local now = os.time()\n    local pool: { QueueEntry } = {}\n\n    for _, item in ipairs(entries) do\n        local entry: QueueEntry = item.value\n        entry._key = item.key\n        table.insert(pool, entry)\n    end\n\n    -- Greedy match: take the first unmatched player, find MATCH_SIZE-1 closest\n    local matched: { [string]: boolean } = {}\n    local matches: { { QueueEntry } } = {}\n\n    for i, anchor in ipairs(pool) do\n        if matched[anchor._key] then continue end\n\n        local waitTime = now - anchor.joinedAt\n        local tolerance = BASE_SKILL_RANGE + waitTime * TOLERANCE_PER_SEC\n        tolerance = math.min(tolerance, MAX_SKILL_RANGE)\n\n        local group: { QueueEntry } = { anchor }\n\n        for j, candidate in ipairs(pool) do\n            if i == j or matched[candidate._key] then continue end\n            if math.abs(candidate.skillRating - anchor.skillRating) <= tolerance then\n                table.insert(group, candidate)\n                if #group >= MATCH_SIZE then break end\n            end\n        end\n\n        if #group >= MATCH_SIZE then\n            -- Trim to exact size and mark as matched\n            while #group > MATCH_SIZE do table.remove(group) end\n            for _, e in ipairs(group) do matched[e._key] = true end\n            table.insert(matches, group)\n        end\n    end\n\n    -- Remove matched players from the queue and teleport them\n    for _, group in ipairs(matches) do\n        for _, entry in ipairs(group) do\n            pcall(function()\n                QueueMap:RemoveAsync(entry._key)\n            end)\n            if entry.serverId == game.JobId then\n                localQueuedPlayers[entry.userId] = nil\n                MatchmakingSystem.QueueUpdate:Fire(entry.userId, false)\n            end\n        end\n        MatchmakingSystem.MatchFound:Fire(group)\n    end\n\n    releaseLock()\nend\n\n\n-- \u2500\u2500\u2500 Teleport \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nMatchmakingSystem.MatchFound:Connect(function(group: { QueueEntry })\n    -- Only this server teleports the players who are on it\n    local localPlayers: { Player } = {}\n    for _, entry in ipairs(group) do\n        if entry.serverId ~= game.JobId then continue end\n        local player = Players:GetPlayerByUserId(entry.userId)\n        if player then\n            table.insert(localPlayers, player)\n        end\n    end\n\n    if #localPlayers == 0 then return end\n\n    -- Build match data to pass to the arena server\n    local matchData = {\n        players = group,\n        startTime = os.time(),\n    }\n\n    local options = Instance.new(\"TeleportOptions\")\n    options.ShouldReserveServer = true\n    options:SetTeleportData(matchData)\n\n    local success, result = pcall(function()\n        return TeleportService:TeleportAsync(MATCH_PLACE_ID, localPlayers, options)\n    end)\n\n    if not success then\n        warn(\"[Matchmaking] Teleport failed:\", result)\n        -- Re-enqueue local players on failure\n        for _, player in ipairs(localPlayers) do\n            MatchmakingSystem.enqueue(player)\n        end\n    end\nend)\n\n\n-- \u2500\u2500\u2500 Tick \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal tickAccum = 0\nRunService.Heartbeat:Connect(function(dt)\n    tickAccum += dt\n    if tickAccum >= TICK_INTERVAL then\n        tickAccum = 0\n        task.spawn(runMatchmakingPass)\n    end\nend)\n\n\n-- \u2500\u2500\u2500 Player lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerRemoving:Connect(function(player)\n    MatchmakingSystem.dequeue(player)\nend)\n\n\n-- \u2500\u2500\u2500 RemoteEvent wiring \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal Remotes   = ReplicatedStorage:WaitForChild(\"MatchmakingRemotes\")\nlocal JoinQueue = Remotes:WaitForChild(\"JoinQueue\")   :: RemoteEvent\nlocal LeaveQueue = Remotes:WaitForChild(\"LeaveQueue\") :: RemoteEvent\nlocal QueueStatus = Remotes:WaitForChild(\"QueueStatus\") :: RemoteEvent\n\nJoinQueue.OnServerEvent:Connect(function(player)\n    local ok, reason = MatchmakingSystem.enqueue(player)\n    QueueStatus:FireClient(player, ok, reason)\nend)\n\nLeaveQueue.OnServerEvent:Connect(function(player)\n    MatchmakingSystem.dequeue(player)\nend)\n\nMatchmakingSystem.QueueUpdate:Connect(function(userId, inQueue)\n    local player = Players:GetPlayerByUserId(userId)\n    if player then\n        QueueStatus:FireClient(player, inQueue)\n    end\nend)\n\n\nreturn MatchmakingSystem\n",
+  quest: "--[[\n    QuestSystem.luau\n    Server-side quest and objective tracking.\n\n    Architecture:\n      - Quests are pure data definitions in a registry \u2014 no logic in the data.\n      - Progress is tracked server-side and persisted via the player's profile.\n      - Objectives listen to game signals (kills, collects, reaches) and update\n        automatically, so adding a new quest never means touching combat code.\n      - Reward granting is centralized and validated before payout.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Quest Registry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype Objective = {\n    id:       string,\n    type:     \"kill\" | \"collect\" | \"reach\",\n    target:   string,   -- e.g. \"goblin\", \"gold_coin\", \"north_outpost\"\n    required: number,\n}\n\ntype QuestDef = {\n    id:          string,\n    displayName: string,\n    description: string,\n    objectives:  { Objective },\n    rewards:     { gold: number?, xp: number?, items: { string }? },\n    prerequisite: string?,  -- quest id that must be completed first\n}\n\nlocal QUEST_REGISTRY: { [string]: QuestDef } = {\n    slay_goblins = {\n        id = \"slay_goblins\",\n        displayName = \"Goblin Trouble\",\n        description = \"Clear the goblins threatening the village.\",\n        objectives = {\n            { id = \"kill_goblins\", type = \"kill\", target = \"goblin\", required = 5 },\n        },\n        rewards = { gold = 100, xp = 50 },\n    },\n    gather_supplies = {\n        id = \"gather_supplies\",\n        displayName = \"Gathering Supplies\",\n        description = \"Collect iron ore for the blacksmith.\",\n        objectives = {\n            { id = \"collect_ore\", type = \"collect\", target = \"iron_ore\", required = 10 },\n        },\n        rewards = { gold = 75, xp = 40, items = { \"iron_sword\" } },\n        prerequisite = \"slay_goblins\",\n    },\n}\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal QuestSystem = {}\n\nQuestSystem.QuestStarted   = Signal.new()  -- (player, questId)\nQuestSystem.ObjectiveUpdated = Signal.new() -- (player, questId, objectiveId, current, required)\nQuestSystem.QuestCompleted = Signal.new()  -- (player, questId)\n\n-- Per-player active quest progress\n-- { [userId] = { [questId] = { [objectiveId] = currentCount } } }\nlocal progress: { [number]: { [string]: { [string]: number } } } = {}\n-- Completed quests:  { [userId] = { [questId] = true } }\nlocal completed: { [number]: { [string]: boolean } } = {}\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getProgress(player: Player)\n    if not progress[player.UserId] then progress[player.UserId] = {} end\n    return progress[player.UserId]\nend\n\nlocal function getCompleted(player: Player)\n    if not completed[player.UserId] then completed[player.UserId] = {} end\n    return completed[player.UserId]\nend\n\nlocal function isQuestComplete(player: Player, questId: string): boolean\n    local def = QUEST_REGISTRY[questId]\n    local questProgress = getProgress(player)[questId]\n    if not def or not questProgress then return false end\n\n    for _, obj in ipairs(def.objectives) do\n        if (questProgress[obj.id] or 0) < obj.required then\n            return false\n        end\n    end\n    return true\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Start a quest. Returns (success, reason).\nfunction QuestSystem.startQuest(player: Player, questId: string): (boolean, string?)\n    local def = QUEST_REGISTRY[questId]\n    if not def then return false, \"unknown quest\" end\n\n    local playerProgress = getProgress(player)\n    if playerProgress[questId] then return false, \"quest already active\" end\n    if getCompleted(player)[questId] then return false, \"quest already completed\" end\n\n    -- Check prerequisite\n    if def.prerequisite and not getCompleted(player)[def.prerequisite] then\n        return false, \"prerequisite not met\"\n    end\n\n    -- Initialize objective counters\n    playerProgress[questId] = {}\n    for _, obj in ipairs(def.objectives) do\n        playerProgress[questId][obj.id] = 0\n    end\n\n    QuestSystem.QuestStarted:Fire(player, questId)\n    return true\nend\n\n-- Report a game event. Any active quest objective matching the event advances.\nfunction QuestSystem.reportEvent(player: Player, eventType: string, target: string, amount: number?)\n    amount = amount or 1\n    local playerProgress = getProgress(player)\n\n    for questId, objectives in pairs(playerProgress) do\n        local def = QUEST_REGISTRY[questId]\n        if not def then continue end\n\n        for _, obj in ipairs(def.objectives) do\n            if obj.type == eventType and obj.target == target then\n                local current = objectives[obj.id] or 0\n                if current < obj.required then\n                    objectives[obj.id] = math.min(current + amount, obj.required)\n                    QuestSystem.ObjectiveUpdated:Fire(\n                        player, questId, obj.id, objectives[obj.id], obj.required\n                    )\n                end\n            end\n        end\n\n        -- Check completion\n        if isQuestComplete(player, questId) then\n            QuestSystem.completeQuest(player, questId)\n        end\n    end\nend\n\n-- Complete a quest and grant rewards.\nfunction QuestSystem.completeQuest(player: Player, questId: string): (boolean, string?)\n    local def = QUEST_REGISTRY[questId]\n    if not def then return false, \"unknown quest\" end\n    if not isQuestComplete(player, questId) then return false, \"objectives not met\" end\n\n    -- Move from active to completed\n    getProgress(player)[questId] = nil\n    getCompleted(player)[questId] = true\n\n    -- Grant rewards (these would call into your economy/inventory/leveling systems)\n    local r = def.rewards\n    if r.gold then\n        -- EconomySystem.addGold(player, r.gold)\n    end\n    if r.xp then\n        -- LevelingSystem.addXP(player, r.xp)\n    end\n    if r.items then\n        for _, itemId in ipairs(r.items) do\n            -- InventorySystem.addItem(player, itemId, 1)\n        end\n    end\n\n    QuestSystem.QuestCompleted:Fire(player, questId)\n    return true\nend\n\nfunction QuestSystem.getActiveQuests(player: Player): { string }\n    local active = {}\n    for questId in pairs(getProgress(player)) do\n        table.insert(active, questId)\n    end\n    return active\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerRemoving:Connect(function(player)\n    progress[player.UserId] = nil\n    completed[player.UserId] = nil\nend)\n\n\nreturn QuestSystem\n",
+  economy: "--[[\n    EconomySystem.luau\n    Server-side currency, shop, and purchase handling.\n\n    Architecture:\n      - All currency lives server-side in the player's profile \u2014 clients only\n        ever read a replicated copy, never write it.\n      - Purchases are validated atomically: check funds \u2192 deduct \u2192 grant, with\n        no window where a player can spend the same gold twice.\n      - Shop stock is a data registry, so adding items never touches purchase logic.\n      - Every transaction returns an explicit result, so the UI can show real errors.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Shop Registry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype ShopItem = {\n    id:        string,\n    itemId:    string,   -- the inventory item granted on purchase\n    price:     number,\n    stock:     number?,  -- nil = unlimited\n    minLevel:  number?,  -- level requirement, optional\n}\n\nlocal SHOP_REGISTRY: { [string]: ShopItem } = {\n    iron_sword = { id = \"iron_sword\", itemId = \"iron_sword\", price = 150 },\n    health_potion = { id = \"health_potion\", itemId = \"health_potion\", price = 25 },\n    leather_chestplate = { id = \"leather_chestplate\", itemId = \"leather_chestplate\", price = 200, minLevel = 5 },\n}\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal EconomySystem = {}\n\nEconomySystem.GoldChanged   = Signal.new()  -- (player, newBalance)\nEconomySystem.PurchaseMade  = Signal.new()  -- (player, shopItemId, price)\n\n-- Per-player gold balance (in a real game this is backed by the profile)\nlocal balances: { [number]: number } = {}\n\nlocal STARTING_GOLD = 50\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getBalance(player: Player): number\n    return balances[player.UserId] or 0\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nfunction EconomySystem.getGold(player: Player): number\n    return getBalance(player)\nend\n\n-- Add gold (from quests, drops, sales). Returns the new balance.\nfunction EconomySystem.addGold(player: Player, amount: number): number\n    if amount <= 0 then return getBalance(player) end\n    balances[player.UserId] = getBalance(player) + amount\n    EconomySystem.GoldChanged:Fire(player, balances[player.UserId])\n    return balances[player.UserId]\nend\n\n-- Remove gold. Returns (success, reason). Fails if insufficient funds.\nfunction EconomySystem.removeGold(player: Player, amount: number): (boolean, string?)\n    if amount <= 0 then return false, \"invalid amount\" end\n    local current = getBalance(player)\n    if current < amount then\n        return false, (\"insufficient funds (have %d, need %d)\"):format(current, amount)\n    end\n    balances[player.UserId] = current - amount\n    EconomySystem.GoldChanged:Fire(player, balances[player.UserId])\n    return true\nend\n\n-- Purchase a shop item. Atomic: validates everything before any state changes.\nfunction EconomySystem.purchase(player: Player, shopItemId: string): (boolean, string?)\n    local shopItem = SHOP_REGISTRY[shopItemId]\n    if not shopItem then return false, \"item not for sale\" end\n\n    -- Level requirement\n    if shopItem.minLevel then\n        -- local level = LevelingSystem.getLevel(player)\n        local level = 99  -- stubbed; wire to your leveling system\n        if level < shopItem.minLevel then\n            return false, (\"requires level %d\"):format(shopItem.minLevel)\n        end\n    end\n\n    -- Stock check\n    if shopItem.stock ~= nil and shopItem.stock <= 0 then\n        return false, \"out of stock\"\n    end\n\n    -- Funds check\n    if getBalance(player) < shopItem.price then\n        return false, \"not enough gold\"\n    end\n\n    -- All checks passed \u2014 perform the transaction\n    local ok = EconomySystem.removeGold(player, shopItem.price)\n    if not ok then return false, \"transaction failed\" end\n\n    -- Decrement stock if limited\n    if shopItem.stock ~= nil then\n        shopItem.stock -= 1\n    end\n\n    -- Grant the item\n    -- InventorySystem.addItem(player, shopItem.itemId, 1)\n\n    EconomySystem.PurchaseMade:Fire(player, shopItemId, shopItem.price)\n    return true\nend\n\n-- Sell an item back for half its shop price.\nfunction EconomySystem.sell(player: Player, shopItemId: string): (boolean, string?)\n    local shopItem = SHOP_REGISTRY[shopItemId]\n    if not shopItem then return false, \"item cannot be sold\" end\n\n    -- Verify ownership before refunding\n    -- if not InventorySystem.hasItem(player, shopItem.itemId) then\n    --     return false, \"you don't own this item\"\n    -- end\n\n    -- InventorySystem.removeItem(player, shopItem.itemId, 1)\n    local refund = math.floor(shopItem.price / 2)\n    EconomySystem.addGold(player, refund)\n    return true\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerAdded:Connect(function(player)\n    balances[player.UserId] = STARTING_GOLD  -- load from profile in production\n    EconomySystem.GoldChanged:Fire(player, STARTING_GOLD)\nend)\n\nPlayers.PlayerRemoving:Connect(function(player)\n    balances[player.UserId] = nil\nend)\n\n\nreturn EconomySystem\n",
+  leveling: "--[[\n    LevelingSystem.luau\n    Server-side experience and leveling with a configurable curve.\n\n    Architecture:\n      - XP and level live server-side, persisted via the player's profile.\n      - The XP-to-level curve is a pure function, so balancing never touches logic.\n      - Leftover XP rolls into the next level (no XP is ever lost on level-up).\n      - A single signal fires on level-up so stats, UI, and unlocks can all react.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal MAX_LEVEL    = 100\nlocal BASE_XP      = 100    -- XP needed for level 1 \u2192 2\nlocal GROWTH       = 1.15   -- each level costs 15% more than the last\n\n-- XP required to go from `level` to `level + 1`.\n-- Pure function \u2014 change these numbers to rebalance with zero code risk.\nlocal function xpForLevel(level: number): number\n    return math.floor(BASE_XP * (GROWTH ^ (level - 1)))\nend\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal LevelingSystem = {}\n\nLevelingSystem.XPGained   = Signal.new()  -- (player, amount, currentXP, neededXP)\nLevelingSystem.LevelUp    = Signal.new()  -- (player, newLevel)\n\ntype PlayerLevel = {\n    level: number,\n    xp:    number,   -- XP accumulated toward the next level\n}\n\nlocal data: { [number]: PlayerLevel } = {}\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getData(player: Player): PlayerLevel\n    if not data[player.UserId] then\n        data[player.UserId] = { level = 1, xp = 0 }\n    end\n    return data[player.UserId]\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nfunction LevelingSystem.getLevel(player: Player): number\n    return getData(player).level\nend\n\nfunction LevelingSystem.getXP(player: Player): (number, number)\n    local d = getData(player)\n    return d.xp, xpForLevel(d.level)\nend\n\n-- Award XP. Handles multi-level jumps if a big chunk is granted at once.\nfunction LevelingSystem.addXP(player: Player, amount: number)\n    if amount <= 0 then return end\n    local d = getData(player)\n\n    if d.level >= MAX_LEVEL then return end\n\n    d.xp += amount\n    LevelingSystem.XPGained:Fire(player, amount, d.xp, xpForLevel(d.level))\n\n    -- Roll over into as many levels as the XP allows\n    while d.level < MAX_LEVEL and d.xp >= xpForLevel(d.level) do\n        d.xp -= xpForLevel(d.level)\n        d.level += 1\n        LevelingSystem.LevelUp:Fire(player, d.level)\n    end\n\n    -- Cap XP at max level\n    if d.level >= MAX_LEVEL then\n        d.xp = 0\n    end\nend\n\n-- Directly set a player's level (e.g. loading from saved data).\nfunction LevelingSystem.setLevel(player: Player, level: number, xp: number?)\n    local d = getData(player)\n    d.level = math.clamp(level, 1, MAX_LEVEL)\n    d.xp = xp or 0\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerAdded:Connect(function(player)\n    data[player.UserId] = { level = 1, xp = 0 }  -- load from profile in production\n\n    -- Example: set up a leaderstat for display\n    local leaderstats = Instance.new(\"Folder\")\n    leaderstats.Name = \"leaderstats\"\n    leaderstats.Parent = player\n\n    local levelValue = Instance.new(\"IntValue\")\n    levelValue.Name = \"Level\"\n    levelValue.Value = 1\n    levelValue.Parent = leaderstats\n\n    LevelingSystem.LevelUp:Connect(function(p, newLevel)\n        if p == player then\n            levelValue.Value = newLevel\n        end\n    end)\nend)\n\nPlayers.PlayerRemoving:Connect(function(player)\n    data[player.UserId] = nil\nend)\n\n\nreturn LevelingSystem\n",
+  pet: "--[[\n    PetSystem.luau\n    Server-side pet/companion spawning, following, and stat bonuses.\n\n    Architecture:\n      - Pet definitions are data (model, stats, bonuses) in a registry.\n      - The server owns which pet is equipped; the client only renders it.\n      - Following uses a server-driven target position with client smoothing,\n        so pets stay in sync without flooding the network every frame.\n      - Equipped pets apply passive stat bonuses through a single hook, so other\n        systems (combat, economy) read bonuses without knowing about pets.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\nlocal RunService        = game:GetService(\"RunService\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Pet Registry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype PetDef = {\n    id:          string,\n    displayName: string,\n    rarity:      \"Common\" | \"Rare\" | \"Epic\" | \"Legendary\",\n    bonuses:     { [string]: number },  -- e.g. { goldMultiplier = 1.1, damage = 5 }\n    followDistance: number,\n}\n\nlocal PET_REGISTRY: { [string]: PetDef } = {\n    starter_pup = {\n        id = \"starter_pup\",\n        displayName = \"Starter Pup\",\n        rarity = \"Common\",\n        bonuses = { goldMultiplier = 1.05 },\n        followDistance = 5,\n    },\n    shadow_wolf = {\n        id = \"shadow_wolf\",\n        displayName = \"Shadow Wolf\",\n        rarity = \"Epic\",\n        bonuses = { goldMultiplier = 1.15, damage = 8 },\n        followDistance = 6,\n    },\n    golden_dragon = {\n        id = \"golden_dragon\",\n        displayName = \"Golden Dragon\",\n        rarity = \"Legendary\",\n        bonuses = { goldMultiplier = 1.5, damage = 20, xpMultiplier = 1.25 },\n        followDistance = 8,\n    },\n}\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal PetSystem = {}\n\nPetSystem.PetEquipped   = Signal.new()  -- (player, petId)\nPetSystem.PetUnequipped = Signal.new()  -- (player)\n\n-- { [userId] = { petId = string, model = Model } }\nlocal equipped: { [number]: { petId: string, model: Model? } } = {}\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function spawnPetModel(player: Player, def: PetDef): Model?\n    local character = player.Character\n    if not character then return nil end\n\n    local root = character:FindFirstChild(\"HumanoidRootPart\")\n    if not root then return nil end\n\n    -- In production, clone from ReplicatedStorage.PetModels[def.id]\n    local model = Instance.new(\"Model\")\n    model.Name = def.id .. \"_pet\"\n\n    local body = Instance.new(\"Part\")\n    body.Size = Vector3.new(2, 2, 2)\n    body.CFrame = root.CFrame * CFrame.new(def.followDistance, 0, 0)\n    body.CanCollide = false\n    body.Anchored = false\n    body.Parent = model\n    model.PrimaryPart = body\n\n    model.Parent = workspace\n    return model\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Equip a pet. Returns (success, reason).\nfunction PetSystem.equipPet(player: Player, petId: string): (boolean, string?)\n    local def = PET_REGISTRY[petId]\n    if not def then return false, \"unknown pet\" end\n\n    -- In production, verify the player actually owns this pet\n    -- if not PetInventory.owns(player, petId) then return false, \"pet not owned\" end\n\n    -- Unequip current pet first\n    PetSystem.unequipPet(player)\n\n    local model = spawnPetModel(player, def)\n    equipped[player.UserId] = { petId = petId, model = model }\n\n    PetSystem.PetEquipped:Fire(player, petId)\n    return true\nend\n\nfunction PetSystem.unequipPet(player: Player)\n    local current = equipped[player.UserId]\n    if not current then return end\n\n    if current.model then\n        current.model:Destroy()\n    end\n    equipped[player.UserId] = nil\n    PetSystem.PetUnequipped:Fire(player)\nend\n\n-- Read the combined bonus of a given type from the equipped pet.\n-- Other systems call this without needing to know anything about pets.\nfunction PetSystem.getBonus(player: Player, bonusType: string): number\n    local current = equipped[player.UserId]\n    if not current then\n        -- Sensible defaults: multipliers default to 1, flat bonuses to 0\n        return bonusType:find(\"Multiplier\") and 1 or 0\n    end\n\n    local def = PET_REGISTRY[current.petId]\n    local value = def.bonuses[bonusType]\n    if value then return value end\n    return bonusType:find(\"Multiplier\") and 1 or 0\nend\n\nfunction PetSystem.getEquippedPet(player: Player): string?\n    local current = equipped[player.UserId]\n    return current and current.petId or nil\nend\n\n\n-- \u2500\u2500\u2500 Follow loop \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n-- Server sets a target position; the client smooths between updates.\n\nRunService.Heartbeat:Connect(function()\n    for userId, current in pairs(equipped) do\n        local player = Players:GetPlayerByUserId(userId)\n        if not player or not current.model or not current.model.PrimaryPart then continue end\n\n        local character = player.Character\n        local root = character and character:FindFirstChild(\"HumanoidRootPart\")\n        if not root then continue end\n\n        local def = PET_REGISTRY[current.petId]\n        local targetCFrame = root.CFrame * CFrame.new(def.followDistance, 0, 0)\n\n        -- Lerp toward the target so movement is smooth, not snappy\n        local current_cf = current.model.PrimaryPart.CFrame\n        current.model:PivotTo(current_cf:Lerp(targetCFrame, 0.1))\n    end\nend)\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerRemoving:Connect(function(player)\n    PetSystem.unequipPet(player)\nend)\n\n\nreturn PetSystem\n",
+  crafting: "--[[\n    CraftingSystem.luau\n    Server-side crafting with recipe validation and atomic material consumption.\n\n    Architecture:\n      - Recipes are pure data: inputs, output, and an optional level requirement.\n      - Crafting is atomic \u2014 materials are only consumed if the full recipe can\n        be satisfied, so a failed craft never eats half the ingredients.\n      - The server validates everything; the client just requests a craft by id.\n      - Recipe unlocks are checked server-side so locked recipes can't be forced.\n--]]\n\nlocal Players           = game:GetService(\"Players\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\n\nlocal Signal = require(ReplicatedStorage.Packages.Signal)\n\n-- \u2500\u2500\u2500 Recipe Registry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ntype Ingredient = {\n    itemId:   string,\n    quantity: number,\n}\n\ntype Recipe = {\n    id:       string,\n    output:   Ingredient,        -- what you get\n    inputs:   { Ingredient },    -- what it costs\n    minLevel: number?,\n}\n\nlocal RECIPE_REGISTRY: { [string]: Recipe } = {\n    iron_sword = {\n        id = \"iron_sword\",\n        output = { itemId = \"iron_sword\", quantity = 1 },\n        inputs = {\n            { itemId = \"iron_ore\", quantity = 3 },\n            { itemId = \"wood_plank\", quantity = 1 },\n        },\n    },\n    health_potion = {\n        id = \"health_potion\",\n        output = { itemId = \"health_potion\", quantity = 1 },\n        inputs = {\n            { itemId = \"red_herb\", quantity = 2 },\n            { itemId = \"water_flask\", quantity = 1 },\n        },\n    },\n    steel_chestplate = {\n        id = \"steel_chestplate\",\n        output = { itemId = \"steel_chestplate\", quantity = 1 },\n        inputs = {\n            { itemId = \"steel_ingot\", quantity = 5 },\n            { itemId = \"leather_strap\", quantity = 2 },\n        },\n        minLevel = 10,\n    },\n}\n\n-- \u2500\u2500\u2500 Module \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal CraftingSystem = {}\n\nCraftingSystem.ItemCrafted = Signal.new()  -- (player, recipeId, output)\n\n-- Recipes a player has unlocked: { [userId] = { [recipeId] = true } }\nlocal unlocked: { [number]: { [string]: boolean } } = {}\n\n\n-- \u2500\u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nlocal function getUnlocked(player: Player)\n    if not unlocked[player.UserId] then unlocked[player.UserId] = {} end\n    return unlocked[player.UserId]\nend\n\n-- Check whether the player has every input the recipe needs.\nlocal function hasAllInputs(player: Player, recipe: Recipe): boolean\n    for _, input in ipairs(recipe.inputs) do\n        -- local count = InventorySystem.getItemCount(player, input.itemId)\n        local count = 99  -- stubbed; wire to your inventory system\n        if count < input.quantity then\n            return false\n        end\n    end\n    return true\nend\n\n\n-- \u2500\u2500\u2500 Public API \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nfunction CraftingSystem.unlockRecipe(player: Player, recipeId: string)\n    if RECIPE_REGISTRY[recipeId] then\n        getUnlocked(player)[recipeId] = true\n    end\nend\n\n-- Attempt to craft. Atomic: nothing is consumed unless the full craft succeeds.\nfunction CraftingSystem.craft(player: Player, recipeId: string): (boolean, string?)\n    local recipe = RECIPE_REGISTRY[recipeId]\n    if not recipe then return false, \"unknown recipe\" end\n\n    -- Recipe must be unlocked\n    if not getUnlocked(player)[recipeId] then\n        return false, \"recipe not unlocked\"\n    end\n\n    -- Level requirement\n    if recipe.minLevel then\n        -- local level = LevelingSystem.getLevel(player)\n        local level = 99  -- stubbed\n        if level < recipe.minLevel then\n            return false, (\"requires level %d\"):format(recipe.minLevel)\n        end\n    end\n\n    -- Verify ALL inputs before consuming ANY of them\n    if not hasAllInputs(player, recipe) then\n        return false, \"missing materials\"\n    end\n\n    -- Consume inputs (only reached once we know the craft will succeed)\n    for _, input in ipairs(recipe.inputs) do\n        -- InventorySystem.removeItem(player, input.itemId, input.quantity)\n    end\n\n    -- Grant output\n    -- InventorySystem.addItem(player, recipe.output.itemId, recipe.output.quantity)\n\n    CraftingSystem.ItemCrafted:Fire(player, recipeId, recipe.output)\n    return true\nend\n\n-- List recipes the player can currently craft (unlocked + has materials).\nfunction CraftingSystem.getCraftable(player: Player): { string }\n    local craftable = {}\n    for recipeId, recipe in pairs(RECIPE_REGISTRY) do\n        if getUnlocked(player)[recipeId] and hasAllInputs(player, recipe) then\n            table.insert(craftable, recipeId)\n        end\n    end\n    return craftable\nend\n\n\n-- \u2500\u2500\u2500 Lifecycle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nPlayers.PlayerRemoving:Connect(function(player)\n    unlocked[player.UserId] = nil\nend)\n\n\nreturn CraftingSystem\n"
+};
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function syntaxHL(raw){
+  return raw.split('\n').map(line=>{
+    if(/^\s*--/.test(line)) return '<span style="color:#6E7A88;font-style:italic">'+escapeHtml(line)+'</span>';
+    let l = escapeHtml(line);
+    l = l.replace(/(--[^\n]*)$/, '<span style="color:#6E7A88;font-style:italic">$1</span>');
+    l = l.replace(/(&quot;[^&]*?&quot;|&#39;[^&]*?&#39;)/g, '<span style="color:#A8D08D">$1</span>');
+    l = l.replace(/\b(local|function|end|if|then|else|elseif|return|and|or|not|true|false|nil|for|in|do|while|repeat|until|break|continue|type)\b/g, '<span style="color:#E89BC7">$1</span>');
+    l = l.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span style="color:#E0A45D">$1</span>');
+    return l;
+  }).join('\n');
+}
+
+const drawerOpen = {};
+const codeOpen = {};
+
+function toggleProject(key){
+  const project = document.getElementById('proj-'+key);
+  const drawer = document.getElementById('drawer-'+key);
+  const header = project.querySelector('.project-header');
+
+  if(!drawerOpen[key]){
+    drawer.classList.add('open');
+    project.classList.add('open');
+    header.setAttribute('aria-expanded','true');
+    drawerOpen[key] = true;
+  } else {
+    drawer.classList.remove('open');
+    project.classList.remove('open');
+    header.setAttribute('aria-expanded','false');
+    drawerOpen[key] = false;
+  }
+}
+
+function toggleCode(key){
+  const viewer = document.getElementById('viewer-'+key);
+  const pre = document.getElementById('pre-'+key);
+  const linesEl = document.getElementById('lines-'+key);
+  const btn = document.getElementById('codebtn-'+key);
+
+  if(!codeOpen[key]){
+    if(!pre.dataset.loaded){
+      const raw = CODE[key];
+      pre.innerHTML = syntaxHL(raw);
+      linesEl.textContent = raw.split('\n').length + ' lines';
+      pre.dataset.loaded = '1';
+    }
+    viewer.classList.add('open');
+    btn.textContent = 'Hide code';
+    codeOpen[key] = true;
+    // expand the drawer further to fit code
+    document.getElementById('drawer-'+key).style.maxHeight = '1400px';
+  } else {
+    viewer.classList.remove('open');
+    btn.textContent = 'View code';
+    codeOpen[key] = false;
+    document.getElementById('drawer-'+key).style.maxHeight = '1200px';
+  }
+}
+
+// ── FSM interactive ──
+const states = [
+  { id:"idle",     name:"Idle",     desc:"Default state. No input registered. The server accepts a transition to Windup if the player's action cooldown has expired.", transitions:[["Idle","Windup"]] },
+  { id:"windup",   name:"Windup",   desc:"Attack requested and being validated server-side — cooldown check, resource cost, animation sync — before any damage can occur.", transitions:[["Windup","Active"],["Windup","Idle (cancelled)"]] },
+  { id:"active",   name:"Active",   desc:"The hit window. Hitbox is live and server-owned for this duration only — no damage event is trusted if it arrives outside this state.", transitions:[["Active","Recovery"]] },
+  { id:"recovery", name:"Recovery", desc:"Post-hit cooldown. New attack requests are queued, not dropped, so input feels responsive without breaking the cooldown contract.", transitions:[["Recovery","Idle"],["Recovery","Stunned"]] },
+  { id:"stunned",  name:"Stunned",  desc:"External interrupt — triggered by an incoming hit or crowd-control effect. Overrides any queued input until the stun timer clears.", transitions:[["Stunned","Idle"]] },
+];
+const btnContainer = document.getElementById('stateButtons');
+const nameEl = document.getElementById('stateName');
+const descEl = document.getElementById('stateDesc');
+const transEl = document.getElementById('stateTrans');
+function renderState(id){
+  const s = states.find(x=>x.id===id);
+  nameEl.textContent = s.name;
+  descEl.textContent = s.desc;
+  transEl.innerHTML = s.transitions.map(t=>`<div>${t[0]} <span>→</span> ${t[1]}</div>`).join('');
+  document.querySelectorAll('.state-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+}
+states.forEach((s,i)=>{
+  const btn = document.createElement('button');
+  btn.className='state-btn'+(i===0?' active':'');
+  btn.textContent=s.name; btn.dataset.id=s.id;
+  btn.addEventListener('click',()=>renderState(s.id));
+  btnContainer.appendChild(btn);
+});
+renderState('idle');
+</script>
+
+</body>
+</html>
